@@ -39,8 +39,8 @@ public class LevelGenerator : MonoBehaviour
     }
 
     private void Update()
-    {
-        TryCreateTemplate(ref _earlyBarrierPositionX, _distanceBetweenBarriers,  _barrier);
+    {        
+        TryCreateTemplate(ref _earlyBarrierPositionX, _distanceBetweenBarriers, _barrier);
 
         if ((int)(Random.Range(0, 100)) == 0)
         {
@@ -48,13 +48,11 @@ public class LevelGenerator : MonoBehaviour
         }
     }
 
-    private void TryCreateTemplate(ref float earlyPosition, float distance, GameObject template)
+    private void TryCreateTemplate(ref float earlyPosition, float distance,  GameObject template)
     {
         if (_transformPlayer.position.x - earlyPosition >= distance)
         {
-            int x = GridFragmentationAxis();
-            int z = (int)(Random.Range(0, _cellCountOnWidth));
-            var gridPosition = new Vector3Int(x, 0, z);
+            Vector3Int gridPosition = GridFragmentationAxis();
 
             while (_filledCells.Contains(gridPosition))
             {
@@ -68,12 +66,14 @@ public class LevelGenerator : MonoBehaviour
             earlyPosition = _transformPlayer.position.x;
         }
     }
-    private int GridFragmentationAxis()
+    private Vector3Int GridFragmentationAxis()
     {
         var gridStartingPosition = WorldToGridPosition(_transformPlayer.position);
         var cellCountOnDistance = (int)((_terrain.terrainData.size.x - _transformPlayer.position.x) / _cellSize.x);
         int x = gridStartingPosition.x + cellCountOnDistance;
-        return x;
+        int z = (int)(Random.Range(0, _cellCountOnWidth));
+        var gridPosition = new Vector3Int(x, 0, z);
+        return gridPosition;
     }
 
     private Vector3Int WorldToGridPosition(Vector3 worldPosition)
