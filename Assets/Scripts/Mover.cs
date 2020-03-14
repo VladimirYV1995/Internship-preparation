@@ -4,30 +4,30 @@ using UnityEngine;
 
 public class Mover : MonoBehaviour
 {
-    [SerializeField] private Transform _transformPlayer;
-    [SerializeField] private Transform _transformCamera;
+    [SerializeField] private Transform _player;
+    [SerializeField] private Transform _camera;
     [SerializeField] private Terrain _terrain;
 
-    private float _distanceTirrainEnd;
-    private float _earlyPlayerPositionX;
+    private float _distanceEndTirrain;
+    private float _lastPlayerPositionX;
     private float _speedPlayer;
 
     private void Start()
     {
-        _earlyPlayerPositionX = _transformPlayer.position.x;
-        _distanceTirrainEnd = _terrain.terrainData.size.x - _transformPlayer.position.x;
+        _lastPlayerPositionX = _player.position.x;
+        _distanceEndTirrain = _terrain.terrainData.size.x - _player.position.x;
     }
 
     private void Update()
     {
-        if (_earlyPlayerPositionX != _transformPlayer.position.x)
+        if (_lastPlayerPositionX != _player.position.x)
         {
-            _speedPlayer = Mathf.Abs(_transformPlayer.position.x - _earlyPlayerPositionX) / Time.deltaTime;
+            _speedPlayer = Mathf.Abs(_player.position.x - _lastPlayerPositionX) / Time.deltaTime;
 
-            _transformCamera.position = MovingEnvironment( _transformCamera.position, _transformPlayer.position.x);            
-            _terrain.terrainData.size = MovingEnvironment(_terrain.terrainData.size, _transformPlayer.position.x + _distanceTirrainEnd);
+            _camera.position = MovingEnvironment( _camera.position, _player.position.x);            
+            _terrain.terrainData.size = MovingEnvironment(_terrain.terrainData.size, _player.position.x + _distanceEndTirrain);
 
-            _earlyPlayerPositionX = _transformPlayer.position.x;
+            _lastPlayerPositionX = _player.position.x;
         }
     }
 
