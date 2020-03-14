@@ -24,28 +24,13 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
+        Move("Horizontal", Vector3.right);
+        Move("Vertical", Vector3.forward);
 
-        if (Input.GetAxis("Horizontal") > 0 || _transform.position.x < _leftDistance)
+        if (_transform.position.z >= _longDistance || _transform.position.z <= _nearDistance || _transform.position.x <= _leftDistance)
         {
-            _rigidbody.AddForce(Vector3.right * _moveForce);
-        }
-        else if (Input.GetAxis("Horizontal") < 0)
-        {
-            _rigidbody.AddForce(Vector3.left * _moveForce);
-        }
-
-        if (Input.GetAxis("Vertical") > 0)
-        {
-            _rigidbody.AddForce(Vector3.forward * _moveForce);
-        }
-        else if (Input.GetAxis("Vertical") < 0)
-        {
-            _rigidbody.AddForce(Vector3.back * _moveForce);
-        }
-
-        if (_transform.position.z >= _longDistance || _transform.position.z <= _nearDistance )
-        {
-            _rigidbody.velocity = -_rigidbody.velocity;
+           _rigidbody.velocity = -_rigidbody.velocity;
+            _rigidbody.AddForce(_rigidbody.velocity.normalized * _moveForce);
         }
 
         if (Input.GetKey(KeyCode.Space) && _onGround)
@@ -53,6 +38,15 @@ public class Player : MonoBehaviour
             _rigidbody.AddForce(Vector3.up * _jumpForce);
             _onGround = false;
         }
+    }
+
+    private void Move(string axis, Vector3 positive)
+    {
+        if (Input.GetAxis(axis) != 0)
+        {
+             int realDirectrion = (int)(Input.GetAxis(axis) / Mathf.Abs(Input.GetAxis(axis)));
+            _rigidbody.AddForce(realDirectrion * positive * _moveForce);
+        }       
     }
 
     private void OnCollisionEnter(Collision collision)

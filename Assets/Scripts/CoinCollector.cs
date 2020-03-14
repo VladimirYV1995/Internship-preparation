@@ -4,27 +4,28 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-public class CollectCoin : MonoBehaviour
+public class CoinCollector : MonoBehaviour
 {
-    [SerializeField] private UnityEvent _foundCoin;
-    [SerializeField] private Text _text;
+    [SerializeField] private UnityEvent _сoinCollecting;
+    [SerializeField] private Text _scoreInfo;
 
     private int _score;
-    private string _defaultheadline;
+    private string _constantInscription;
+
     private void Awake()
     {
         _score = 0;
-        _defaultheadline = _text.text;
-        _text.text += _score.ToString();
+        _constantInscription = _scoreInfo.text;
+        _scoreInfo.text += _score.ToString();
     }
     private void OnTriggerEnter(Collider collider)
     {
         if (collider.GetComponent<Coin>())
         {
-            _foundCoin?.Invoke();
+            _сoinCollecting?.Invoke();
             collider.GetComponent<Coin>().Collect();
             _score++;
-            _text.text = _defaultheadline + _score.ToString();
+            _scoreInfo.text = _constantInscription + _score.ToString();
         }
     }
 }

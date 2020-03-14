@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class LevelGenerator : MonoBehaviour
 {
-    [SerializeField] private Transform _transformPlayer;
+    [SerializeField] private Transform _player;
     [SerializeField] private Terrain _terrain;
     [SerializeField] private GameObject _barrier;
     [SerializeField] private GameObject _coin;
@@ -15,14 +15,14 @@ public class LevelGenerator : MonoBehaviour
     [SerializeField] private float _distanceBetweenBarriers;
 
     private Vector3 _cellSize;
-    private float _earlyBarrierPositionX;
-    private float _earlyCoinPositionX;
+    private float _lastBarrierPositionX;
+    private float _lastCoinPositionX;
     private float _cellCountOnWidth;
     private HashSet<Vector3> _filledCells;
 
     private void Awake()
     {
-        //!!! после изменения в игре террейна изменяет и в редакторе!!!! Функцию держать именно в Awake, иначе _terrain.terrainData.size устанавливается в рандомным
+        //!!! после изменения в игре террейна изменяет и в редакторе!!!! Функцию держать именно в Awake, иначе _terrain.terrainData.size.x устанавливается рандомным значением
         _terrain.terrainData.size = new Vector3(_initialTerrainSizeX, _terrain.terrainData.size.y, _terrain.terrainData.size.z);
 
         _cellSize = _barrier.GetComponent<Transform>().localScale;
@@ -31,8 +31,8 @@ public class LevelGenerator : MonoBehaviour
             _distanceBetweenBarriers = _cellSize.x;
         }
 
-        _earlyBarrierPositionX = _transformPlayer.position.x - _distanceBetweenBarriers;
-        _earlyCoinPositionX = _transformPlayer.position.x - _cellSize.z;
+        _lastBarrierPositionX = _player.position.x - _distanceBetweenBarriers;
+        _lastCoinPositionX = _player.position.x - _cellSize.z;
 
         _cellCountOnWidth = (int)(_terrain.terrainData.size.z / _cellSize.z);
         _filledCells = new HashSet<Vector3>();
@@ -40,17 +40,17 @@ public class LevelGenerator : MonoBehaviour
 
     private void Update()
     {        
-        TryCreateTemplate(ref _earlyBarrierPositionX, _distanceBetweenBarriers, _barrier);
+        TryCreateTemplate(ref _lastBarrierPositionX, _distanceBetweenBarriers, _barrier);
 
-        if ((int)(Random.Range(0, 100)) == 0)
+        if (Random.Range(0, 100) == 0)
         {
-            TryCreateTemplate(ref _earlyCoinPositionX, _cellSize.x, _coin);
+            TryCreateTemplate(ref _lastCoinPositionX, _cellSize.x, _coin);
         }
     }
 
-    private void TryCreateTemplate(ref float earlyPosition, float distance,  GameObject template)
+    private void TryCreateTemplate(ref float lastPosition, float distance,  GameObject template)
     {
-        if (_transformPlayer.position.x - earlyPosition >= distance)
+        if (_player.position.x - lastPosition >= distance)
         {
             Vector3Int gridPosition = GridFragmentationAxis();
 
@@ -63,13 +63,13 @@ public class LevelGenerator : MonoBehaviour
             Vector3 tempatePosition = GridToWorldPosition(gridPosition);
             Instantiate(template, tempatePosition, Quaternion.identity);
 
-            earlyPosition = _transformPlayer.position.x;
+            lastPosition = _player.position.x;
         }
     }
     private Vector3Int GridFragmentationAxis()
     {
-        var gridStartingPosition = WorldToGridPosition(_transformPlayer.position);
-        var cellCountOnDistance = (int)((_terrain.terrainData.size.x - _transformPlayer.position.x) / _cellSize.x);
+        var gridStartingPosition = WorldToGridPosition(_player.position);
+        var cellCountOnDistance = (int)((_terrain.terrainData.size.x - _player.position.x) / _cellSize.x);
         int x = gridStartingPosition.x + cellCountOnDistance;
         int z = (int)(Random.Range(0, _cellCountOnWidth));
         var gridPosition = new Vector3Int(x, 0, z);

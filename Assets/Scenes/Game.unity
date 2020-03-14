@@ -453,7 +453,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7adb2f13f32e9f046b99ae20b68b19e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _foundCoin:
+  "_\u0441oinCollecting":
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 182921474}
@@ -468,7 +468,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  _text: {fileID: 70436645}
+  _scoreInfo: {fileID: 1126407475}
 --- !u!1 &608955298
 GameObject:
   m_ObjectHideFlags: 0
@@ -558,7 +558,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33a2e280699a1e648a0970fe0eee5e01, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _transformPlayer: {fileID: 182921472}
+  _player: {fileID: 182921472}
   _terrain: {fileID: 608955300}
   _barrier: {fileID: 8393883491724786567, guid: e7bc04e11228c0f4f8d1502f0283e869,
     type: 3}

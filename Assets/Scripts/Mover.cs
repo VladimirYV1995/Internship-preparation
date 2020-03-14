@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MovingForPlayer : MonoBehaviour
+public class Mover : MonoBehaviour
 {
     [SerializeField] private Transform _transformPlayer;
     [SerializeField] private Transform _transformCamera;
