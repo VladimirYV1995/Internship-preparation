@@ -438,8 +438,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99187d376836a764c80c718ed812ee4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _transformPlayer: {fileID: 182921472}
-  _transformCamera: {fileID: 963194228}
+  _player: {fileID: 182921472}
+  _camera: {fileID: 963194228}
   _terrain: {fileID: 608955300}
 --- !u!114 &182921477
 MonoBehaviour:

@@ -15,10 +15,21 @@ public class LevelGenerator : MonoBehaviour
     [SerializeField] private float _distanceBetweenBarriers;
 
     private Vector3 _cellSize;
-    private float _lastBarrierPositionX;
-    private float _lastCoinPositionX;
     private float _cellCountOnWidth;
     private HashSet<Vector3> _filledCells;
+    private LastPositionX _lastPositionX;
+
+    struct LastPositionX
+    {
+        public float Barrier;
+        public float Coin;
+
+        public LastPositionX(float playerPositionX , float distanceBetweenBarriers, float distanceBetweenCoins)
+        {
+            Barrier = playerPositionX - distanceBetweenBarriers;
+            Coin = playerPositionX - distanceBetweenCoins;
+        }        
+    }
 
     private void Awake()
     {
@@ -31,24 +42,23 @@ public class LevelGenerator : MonoBehaviour
             _distanceBetweenBarriers = _cellSize.x;
         }
 
-        _lastBarrierPositionX = _player.position.x - _distanceBetweenBarriers;
-        _lastCoinPositionX = _player.position.x - _cellSize.z;
+        _lastPositionX =new LastPositionX(_player.position.x, _distanceBetweenBarriers, _cellSize.z);
 
         _cellCountOnWidth = (int)(_terrain.terrainData.size.z / _cellSize.z);
         _filledCells = new HashSet<Vector3>();
     }
 
     private void Update()
-    {        
-        TryCreateTemplate(ref _lastBarrierPositionX, _distanceBetweenBarriers, _barrier);
+    {
+        _lastPositionX.Barrier = TryCreateTemplate(_lastPositionX.Barrier, _distanceBetweenBarriers, _barrier);
 
         if (Random.Range(0, 100) == 0)
         {
-            TryCreateTemplate(ref _lastCoinPositionX, _cellSize.x, _coin);
+            _lastPositionX.Coin = TryCreateTemplate(_lastPositionX.Coin, _cellSize.x, _coin);
         }
     }
 
-    private void TryCreateTemplate(ref float lastPosition, float distance,  GameObject template)
+    private float TryCreateTemplate(float lastPosition, float distance,  GameObject template)
     {
         if (_player.position.x - lastPosition >= distance)
         {
@@ -63,9 +73,14 @@ public class LevelGenerator : MonoBehaviour
             Vector3 tempatePosition = GridToWorldPosition(gridPosition);
             Instantiate(template, tempatePosition, Quaternion.identity);
 
-            lastPosition = _player.position.x;
+            return _player.position.x;
+        }
+        else
+        {
+            return lastPosition;
         }
     }
+
     private Vector3Int GridFragmentationAxis()
     {
         var gridStartingPosition = WorldToGridPosition(_player.position);
@@ -93,4 +108,3 @@ public class LevelGenerator : MonoBehaviour
         return new Vector3(x, y, z);
     }
 }
-

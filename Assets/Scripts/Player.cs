@@ -12,14 +12,29 @@ public class Player : MonoBehaviour
     [SerializeField] private float _moveForce;
     [SerializeField] private float _jumpForce;
     [SerializeField] private bool _onGround;
+    struct Borders
+    {
+        public float Near { get; }
+        public float Far { get; }
+        public float Left { get; }
 
-    private float _nearDistance, _longDistance, _leftDistance;
+
+        public Borders(float near, float far, float left)
+        {
+            Near = near;
+            Far = far;
+            Left = left;
+        }
+    }
+
+    private Borders _bordersMovement;
 
     private void Start()
     {
-        _nearDistance = _terrain.transform.position.z;
-        _longDistance = _terrain.transform.position.z + _terrain.terrainData.size.z;
-        _leftDistance = _transform.position.x;
+        _bordersMovement = new Borders(_terrain.transform.position.z,
+                                              _terrain.transform.position.z + _terrain.terrainData.size.z,
+                                              _transform.position.x
+                                              );
     }
 
     private void Update()
@@ -27,9 +42,9 @@ public class Player : MonoBehaviour
         Move("Horizontal", Vector3.right);
         Move("Vertical", Vector3.forward);
 
-        if (_transform.position.z >= _longDistance || _transform.position.z <= _nearDistance || _transform.position.x <= _leftDistance)
+        if (_transform.position.z >= _bordersMovement.Far || _transform.position.z <= _bordersMovement.Near || _transform.position.x <= _bordersMovement.Left)
         {
-           _rigidbody.velocity = -_rigidbody.velocity;
+            _rigidbody.velocity = -_rigidbody.velocity;
             _rigidbody.AddForce(_rigidbody.velocity.normalized * _moveForce);
         }
 
@@ -44,9 +59,9 @@ public class Player : MonoBehaviour
     {
         if (Input.GetAxis(axis) != 0)
         {
-             int realDirectrion = (int)(Input.GetAxis(axis) / Mathf.Abs(Input.GetAxis(axis)));
+            int realDirectrion = (int)(Input.GetAxis(axis) / Mathf.Abs(Input.GetAxis(axis)));
             _rigidbody.AddForce(realDirectrion * positive * _moveForce);
-        }       
+        }
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -56,7 +71,4 @@ public class Player : MonoBehaviour
             _onGround = true;
         }
     }
-
 }
-
-
