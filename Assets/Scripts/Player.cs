@@ -10,57 +10,38 @@ public class Player : MonoBehaviour
     [SerializeField] private Terrain _terrain;
 
     [SerializeField] private float _moveForce;
-    [SerializeField] private float _jumpForce;
-    [SerializeField] private bool _onGround;
-    struct Borders
-    {
-        public float Near { get; }
-        public float Far { get; }
-        public float Left { get; }
+    [SerializeField] private float _jumpForce ;
 
-
-        public Borders(float near, float far, float left)
-        {
-            Near = near;
-            Far = far;
-            Left = left;
-        }
-    }
-
-    private Borders _bordersMovement;
+    [Header ("Borders")]
+    private float _near;
+    private float _far;
+    private float _left;
 
     private void Start()
     {
-        _bordersMovement = new Borders(_terrain.transform.position.z,
-                                              _terrain.transform.position.z + _terrain.terrainData.size.z,
-                                              _transform.position.x
-                                              );
+        _far = _terrain.transform.position.z + _terrain.terrainData.size.z;
+        _near = _terrain.transform.position.z;
+        _left = transform.position.x;
     }
 
     private void Update()
     {
-        Move("Horizontal", Vector3.right);
-        Move("Vertical", Vector3.forward);
+        TryMove(Input.GetAxis("Vertical"), Vector3.forward);
+        TryMove(Input.GetAxis("Horizontal"), Vector3.right);
 
-        if (_transform.position.z >= _bordersMovement.Far || _transform.position.z <= _bordersMovement.Near || _transform.position.x <= _bordersMovement.Left)
+        if (_transform.position.z >= _far || _transform.position.z <= _near || _transform.position.x <= _left)
         {
             _rigidbody.velocity = -_rigidbody.velocity;
             _rigidbody.AddForce(_rigidbody.velocity.normalized * _moveForce);
         }
-
-        if (Input.GetKey(KeyCode.Space) && _onGround)
-        {
-            _rigidbody.AddForce(Vector3.up * _jumpForce);
-            _onGround = false;
-        }
     }
 
-    private void Move(string axis, Vector3 positive)
+    private void TryMove(float valueAxis, Vector3 positiveDirection)
     {
-        if (Input.GetAxis(axis) != 0)
+        if (valueAxis != 0 )
         {
-            int realDirectrion = (int)(Input.GetAxis(axis) / Mathf.Abs(Input.GetAxis(axis)));
-            _rigidbody.AddForce(realDirectrion * positive * _moveForce);
+            int realDirectrion = (int)(valueAxis / Mathf.Abs(valueAxis));
+            _rigidbody.AddForce(realDirectrion * positiveDirection * _moveForce);
         }
     }
 
@@ -68,7 +49,15 @@ public class Player : MonoBehaviour
     {
         if (collision.collider)
         {
-            _onGround = true;
+            TryJump();            
+        }
+    }
+
+    private void TryJump()
+    {
+        if (Input.GetKey(KeyCode.Space))
+        {
+            _rigidbody.AddForce(Vector3.up * _jumpForce);
         }
     }
 }

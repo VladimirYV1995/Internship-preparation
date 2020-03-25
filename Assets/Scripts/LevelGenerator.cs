@@ -6,34 +6,19 @@ using UnityEngine;
 public class LevelGenerator : MonoBehaviour
 {
     [SerializeField] private Transform _player;
-    [SerializeField] private Terrain _terrain;
+    [SerializeField] private Terrain _terrain;    
     [SerializeField] private GameObject _barrier;
     [SerializeField] private GameObject _coin;
-
     [SerializeField] private float _initialTerrainSizeX;
-
     [SerializeField] private float _distanceBetweenBarriers;
 
     private Vector3 _cellSize;
-    private float _cellCountOnWidth;
     private HashSet<Vector3> _filledCells;
-    private LastPositionX _lastPositionX;
-
-    struct LastPositionX
-    {
-        public float Barrier;
-        public float Coin;
-
-        public LastPositionX(float playerPositionX , float distanceBetweenBarriers, float distanceBetweenCoins)
-        {
-            Barrier = playerPositionX - distanceBetweenBarriers;
-            Coin = playerPositionX - distanceBetweenCoins;
-        }        
-    }
 
     private void Awake()
     {
-        //!!! после изменения в игре террейна изменяет и в редакторе!!!! Функцию держать именно в Awake, иначе _terrain.terrainData.size.x устанавливается рандомным значением
+        //!!! после изменения в игре, размер террейна изменяется и в редакторе!!!! 
+        //инициализацию размера террейна держать именно в Awake, иначе _terrain.terrainData.size.x устанавливается рандомным значением
         _terrain.terrainData.size = new Vector3(_initialTerrainSizeX, _terrain.terrainData.size.y, _terrain.terrainData.size.z);
 
         _cellSize = _barrier.GetComponent<Transform>().localScale;
@@ -42,51 +27,47 @@ public class LevelGenerator : MonoBehaviour
             _distanceBetweenBarriers = _cellSize.x;
         }
 
-        _lastPositionX =new LastPositionX(_player.position.x, _distanceBetweenBarriers, _cellSize.z);
-
-        _cellCountOnWidth = (int)(_terrain.terrainData.size.z / _cellSize.z);
         _filledCells = new HashSet<Vector3>();
+        _filledCells.Add(_terrain.terrainData.size);
     }
 
     private void Update()
     {
-        _lastPositionX.Barrier = TryCreateTemplate(_lastPositionX.Barrier, _distanceBetweenBarriers, _barrier);
+       TryCreateTemplate(_distanceBetweenBarriers, _barrier);
 
         if (Random.Range(0, 100) == 0)
         {
-            _lastPositionX.Coin = TryCreateTemplate(_lastPositionX.Coin, _cellSize.x, _coin);
+            TryCreateTemplate(_cellSize.x, _coin);
         }
     }
 
-    private float TryCreateTemplate(float lastPosition, float distance,  GameObject template)
+    private void TryCreateTemplate(float distance,  GameObject template)
     {
-        if (_player.position.x - lastPosition >= distance)
+        if (_terrain.terrainData.size.x - _filledCells.Last().x >= distance)
         {
-            Vector3Int gridPosition = GridFragmentationAxis();
+            Vector3Int gridPosition = FragmentationAxis();
 
             while (_filledCells.Contains(gridPosition))
             {
-                gridPosition.y += 1;
+                gridPosition.y++ ;
             }
             _filledCells.Add(gridPosition);
 
             Vector3 tempatePosition = GridToWorldPosition(gridPosition);
             Instantiate(template, tempatePosition, Quaternion.identity);
-
-            return _player.position.x;
-        }
-        else
-        {
-            return lastPosition;
         }
     }
 
-    private Vector3Int GridFragmentationAxis()
+    private Vector3Int FragmentationAxis()
     {
         var gridStartingPosition = WorldToGridPosition(_player.position);
+
         var cellCountOnDistance = (int)((_terrain.terrainData.size.x - _player.position.x) / _cellSize.x);
+        var cellCountOnWidth = (int)(_terrain.terrainData.size.z / _cellSize.z);
+
         int x = gridStartingPosition.x + cellCountOnDistance;
-        int z = (int)(Random.Range(0, _cellCountOnWidth));
+        int z = (int)(Random.Range(0, cellCountOnWidth));
+
         var gridPosition = new Vector3Int(x, 0, z);
         return gridPosition;
     }
@@ -99,6 +80,7 @@ public class LevelGenerator : MonoBehaviour
 
         return new Vector3Int(x, y, z);
     }
+
     private Vector3 GridToWorldPosition(Vector3Int gridPosition)
     {
         float x = gridPosition.x * _cellSize.x + _cellSize.x / 2;

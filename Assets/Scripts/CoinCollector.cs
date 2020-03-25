@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class CoinCollector : MonoBehaviour
 {
     [SerializeField] private UnityEvent _сoinCollecting;
-    [SerializeField] private Text _scoreInfo;
+    [SerializeField] private Text _scoreInfoTemplate;
 
     private int _score;
     private string _constantInscription;
@@ -15,17 +15,18 @@ public class CoinCollector : MonoBehaviour
     private void Awake()
     {
         _score = 0;
-        _constantInscription = _scoreInfo.text;
-        _scoreInfo.text += _score.ToString();
+        _constantInscription = _scoreInfoTemplate.text;
+        _scoreInfoTemplate.text += _score.ToString();
     }
+
     private void OnTriggerEnter(Collider collider)
     {
-        if (collider.GetComponent<Coin>())
+        if (collider.TryGetComponent<Coin>(out Coin coin))
         {
             _сoinCollecting?.Invoke();
-            collider.GetComponent<Coin>().Collect();
+            coin.Collect();
             _score++;
-            _scoreInfo.text = _constantInscription + _score.ToString();
+            _scoreInfoTemplate.text = _constantInscription + _score.ToString();
         }
     }
 }
