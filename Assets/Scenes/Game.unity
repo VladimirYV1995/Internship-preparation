@@ -439,6 +439,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _player: {fileID: 182921472}
   _camera: {fileID: 963194228}
+  _border: {fileID: 608955303}
   _terrain: {fileID: 608955300}
 --- !u!114 &182921477
 MonoBehaviour:
@@ -480,6 +481,7 @@ GameObject:
   - component: {fileID: 608955300}
   - component: {fileID: 608955299}
   - component: {fileID: 608955302}
+  - component: {fileID: 608955303}
   m_Layer: 0
   m_Name: Terrain
   m_TagString: Untagged
@@ -564,6 +566,19 @@ MonoBehaviour:
   _coin: {fileID: 5225191133208485485, guid: 9ed185485489a0048b597c9a17e14925, type: 3}
   _initialTerrainSizeX: 17
   _distanceBetweenBarriers: 3
+--- !u!65 &608955303
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 608955298}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0

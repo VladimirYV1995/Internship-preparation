@@ -6,9 +6,11 @@ using UnityEngine;
 public class LevelGenerator : MonoBehaviour
 {
     [SerializeField] private Transform _player;
-    [SerializeField] private Terrain _terrain;    
+    [SerializeField] private Terrain _terrain;
+
     [SerializeField] private GameObject _barrier;
     [SerializeField] private GameObject _coin;
+
     [SerializeField] private float _initialTerrainSizeX;
     [SerializeField] private float _distanceBetweenBarriers;
 
@@ -33,7 +35,7 @@ public class LevelGenerator : MonoBehaviour
 
     private void Update()
     {
-       TryCreateTemplate(_distanceBetweenBarriers, _barrier);
+        TryCreateTemplate(_distanceBetweenBarriers, _barrier);
 
         if (Random.Range(0, 100) == 0)
         {
@@ -41,7 +43,7 @@ public class LevelGenerator : MonoBehaviour
         }
     }
 
-    private void TryCreateTemplate(float distance,  GameObject template)
+    private void TryCreateTemplate(float distance, GameObject template)
     {
         if (_terrain.terrainData.size.x - _filledCells.Last().x >= distance)
         {
@@ -49,7 +51,7 @@ public class LevelGenerator : MonoBehaviour
 
             while (_filledCells.Contains(gridPosition))
             {
-                gridPosition.y++ ;
+                gridPosition.y++;
             }
             _filledCells.Add(gridPosition);
 
@@ -88,5 +90,13 @@ public class LevelGenerator : MonoBehaviour
         float z = gridPosition.z * _cellSize.z + _cellSize.z / 2;
 
         return new Vector3(x, y, z);
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.TryGetComponent<Player>(out Player player))
+        {
+            player.HitBall();
+        }
     }
 }

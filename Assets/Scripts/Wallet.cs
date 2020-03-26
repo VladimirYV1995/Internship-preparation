@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-public class CoinCollector : MonoBehaviour
+public class Wallet : MonoBehaviour
 {
     [SerializeField] private UnityEvent _сoinCollecting;
     [SerializeField] private Text _scoreInfoTemplate;
