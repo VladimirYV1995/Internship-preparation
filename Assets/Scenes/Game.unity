@@ -422,9 +422,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _rigidbody: {fileID: 182921473}
   _transform: {fileID: 182921472}
-  _terrain: {fileID: 608955300}
   _moveForce: 3
-  _jumpForce: 200
+  _jumpForce: 300
 --- !u!114 &182921476
 MonoBehaviour:
   m_ObjectHideFlags: 0

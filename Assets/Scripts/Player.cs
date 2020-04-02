@@ -9,26 +9,39 @@ public class Player : MonoBehaviour
     [SerializeField] private Transform _transform;
 
     [SerializeField] private float _moveForce;
-    [SerializeField] private float _jumpForce ;
+    [SerializeField] private float _jumpForce;
 
     private void Update()
     {
-        TryMove(Input.GetAxis("Vertical"), Vector3.forward);
-        TryMove(Input.GetAxis("Horizontal"), Vector3.right);
+        TryMove();
     }
 
-    public void HitBall()
+    private void TryMove()
     {
-        _rigidbody.velocity = -_rigidbody.velocity;
-        _rigidbody.AddForce( -_rigidbody.velocity * _moveForce);
-    }
+        Vector3 direction = DetermineDirection();
 
-    private void TryMove(float valueAxis, Vector3 positiveDirection)
-    {
-        if (valueAxis != 0 )
+        if (direction != Vector3.zero)
         {
-            int realDirectrion = (int)(valueAxis / Mathf.Abs(valueAxis));
-            _rigidbody.AddForce(realDirectrion * positiveDirection * _moveForce);
+            _rigidbody.AddForce(direction * _moveForce);
+        }
+    }
+
+    private Vector3 DetermineDirection()
+    {
+        int x = DetermineAxis(Input.GetAxis("Horizontal"));
+        int z = DetermineAxis(Input.GetAxis("Vertical"));
+        return new Vector3(x, 0, z);
+    }
+
+    private int DetermineAxis(float valueAxis)
+    {
+        if (valueAxis != 0)
+        {
+            return (int)(valueAxis / Mathf.Abs(valueAxis));
+        }
+        else
+        {
+            return 0;
         }
     }
 
@@ -36,7 +49,7 @@ public class Player : MonoBehaviour
     {
         if (collision.collider)
         {
-            TryJump();            
+            TryJump();
         }
     }
 
@@ -45,6 +58,15 @@ public class Player : MonoBehaviour
         if (Input.GetKey(KeyCode.Space))
         {
             _rigidbody.AddForce(Vector3.up * _jumpForce);
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.TryGetComponent<LevelGenerator>(out LevelGenerator levelGenerator))
+        {
+            _rigidbody.velocity = -_rigidbody.velocity;
+            _rigidbody.AddForce(_rigidbody.velocity * _moveForce);
         }
     }
 }

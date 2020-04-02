@@ -91,12 +91,4 @@ public class LevelGenerator : MonoBehaviour
 
         return new Vector3(x, y, z);
     }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.TryGetComponent<Player>(out Player player))
-        {
-            player.HitBall();
-        }
-    }
 }
